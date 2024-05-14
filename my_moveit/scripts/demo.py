@@ -17,22 +17,69 @@ display_trajectory_publisher = rospy.Publisher(
     moveit_msgs.msg.DisplayTrajectory,
     queue_size=20,
 )
+box_pose = geometry_msgs.msg.PoseStamped()
+box_pose.header.frame_id = "gripperBase"
+box_pose.pose.orientation.w = 1.0
+box_pose.pose.position.y = 0.1  
+box_name = "box"
+grasping_group = "hand"
+touch_links = robot.get_link_names(group=grasping_group)
 
-# joint_goal = move_group.get_current_joint_values()
-# joint_goal[0] = 0
-# joint_goal[1] = -tau / 8
-# joint_goal[2] = 0
-# joint_goal[3] = -tau / 4
-# joint_goal[4] = 0
-# joint_goal[5] = 0  # 1/6 of a turn
+
+import math
+def goStateOne():
+    joint_goal = move_group.get_current_joint_values()
+    joint_goal[0] = 0
+    joint_goal[1] = math.radians(-75)
+    joint_goal[2] = math.radians(80)
+    joint_goal[3] = 0
+    joint_goal[4] = math.radians(80)
+    joint_goal[5] = 0  
+    move_group.go(joint_goal, wait=True)
+    move_group.stop()
+
+def grabBox():
+    box_pose = geometry_msgs.msg.PoseStamped()
+    box_pose.header.frame_id = "gripperBase"
+    box_pose.pose.orientation.w = 1.0
+    box_pose.pose.position.y = 0.1  
+    box_name = "box"
+    scene.add_box(box_name, box_pose, size=(0.075, 0.075, 0.075))
+    grasping_group = "hand"
+    touch_links = robot.get_link_names(group=grasping_group)
+    eef_link = move_group.get_end_effector_link()
+    scene.attach_box(eef_link, box_name, touch_links=touch_links)
+
+def goStateTwo():
+    joint_goal = move_group.get_current_joint_values()
+    joint_goal[0] = math.radians(-180)
+    joint_goal[1] = math.radians(0)
+    joint_goal[2] = math.radians(0)
+    joint_goal[3] = 0
+    joint_goal[4] = math.radians(80)
+    joint_goal[5] = 0  
+    move_group.go(joint_goal, wait=True)
+    move_group.stop()
+eef_link = move_group.get_end_effector_link()
+def dropBox():
+    scene.remove_attached_object(eef_link, name=box_name)
+    scene.remove_world_object(box_name)
 
 
-# # The go command can be called with joint values, poses, or without any
-# # parameters if you have already set the pose or joint target for the group
-# move_group.go(joint_goal, wait=True)
 
-# # Calling ``stop()`` ensures that there is no residual movement
-# move_group.stop()
+
+import time
+
+for i in range(10):
+    goStateOne()
+    time.sleep(1)
+    grabBox()
+    time.sleep(1)
+    goStateTwo()
+    time.sleep(1)
+    dropBox()
+    time.sleep(1)
+'''
 waypoints = []
 scale = 1
 wpose = move_group.get_current_pose().pose
@@ -74,3 +121,4 @@ print("Starting part 2")
 
 move_group.execute(plan, wait=True)
 move_group.stop()
+'''
