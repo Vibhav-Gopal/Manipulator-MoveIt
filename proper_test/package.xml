@@ -1,0 +1,20 @@
+<package>
+  <name>proper_test</name>
+  <version>0.5.0</version>
+
+  <description>In this package i will be making a bin picking robot</description>
+  <author email="vibhavgopal2004@gmail.com">Vibhav</author>
+
+  <maintainer email="vibhavgopal2004@gmail.com">Vibhav</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
+  <run_depend>joint_state_publisher</run_depend>
+  <run_depend>joint_state_publisher_gui</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>xacro</run_depend>
+
+</package>
